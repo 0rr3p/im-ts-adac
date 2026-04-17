@@ -40,7 +40,6 @@ An end-to-end pipeline for anomaly detection and fault classification in industr
    cd im-ts-adac
    pip install -e .
    pip install -r requirements.txt
-        
 ## 🛠️ Usage
 This project uses Hydra for configuration management. You can override parameters directly from the CLI.
 
