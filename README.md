@@ -34,6 +34,13 @@ An end-to-end pipeline for anomaly detection and fault classification in industr
 * `config.yaml`: Hydra configuration file to manage hyperparameters and file paths.
 
 ## ⚙️ Installation
+1. Install miniconda and create python 3.11 environment from "anaconda prompt" terminal (the name cobot it's used just as an example):
+   ```bash
+   conda create --name cobot python=3.11
+1. Activate the environment and install git:
+   ```bash
+   conda activate cobot
+   conda install git
 
 1. Clone the repository:
    ```bash
@@ -52,7 +59,7 @@ Train the model on healthy trajectories for a specific joint (e.g., Joint 1). Th
         python run_reconstruction.py joint_id=1
         Note: Ensure the path_ad in config.yaml points to your training dataset.
 
-3. Anomaly Detection & Classification
+2. Anomaly Detection & Classification
    
 Run the detection pipeline on unseen/mixed data. The script will output anomaly charts, query the FAISS database for known false positives, and ask the user to label any unclassified faults.
 
