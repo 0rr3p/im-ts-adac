@@ -1,0 +1,43 @@
+data:
+  _target_: tsa.dataset.TimeSeriesDataset
+  batch_size: 32
+  data_path: "C:\\Users\\Carlo\\time-series-autoencoder\\examples\\reconstruction\\QUERY_CSV_TOTALE_EXCEL_FATTO_SANE.csv"
+  index_col: "Timestamp"
+  traj_col: "trajectory_id"
+  feature_cols: ["j1_v", "j1_a", "j1_t"]
+  target_col: null                  # not used for reconstruction
+  train_size: 0.85                   # 80% of trajectory IDs → training
+  prediction_window: 1
+  seq_length: 60                    # sliding window; tune between 30–100
+  task:
+    _target_: tsa.dataset.Tasks
+    value: reconstruction
+
+training:
+  denoising: False
+  directions: 1
+  gradient_accumulation_steps: 1
+  hidden_size_encoder: 32
+  hidden_size_decoder: 32
+  input_att: True
+  lr: 1e-3
+  lrs_step_size: 300 ##AUMENTATO
+  max_grad_norm: 1.0
+  num_epochs: 50
+  output_size: 3                    # = len(feature_cols): j1_v, j1_a, j1_t
+  reg1: False
+  reg2: True
+  reg_factor1: 1e-4
+  reg_factor2: 1e-5
+  seq_len: ${data.seq_length}
+  temporal_att: True
+
+general:
+  do_eval: True
+  do_train: True
+  logging_steps: 20
+  output_dir: "output"
+  save_steps: 100
+  eval_during_training: True
+
+path_ad: "C:\\Users\\Carlo\\time-series-autoencoder\\examples\\reconstruction\\QUERY_CSV_TOTALE_EXCEL_FATTO_1MALATA.csv" #insert path 4 anomaly detection
