@@ -47,7 +47,7 @@ This project uses Hydra for configuration management. You can override parameter
    
 Train the model on healthy trajectories for a specific joint (e.g., Joint 1). The script will automatically save the scaler, the best model checkpoints, and compute the dynamic threshold.
 
-        
+        cd im-tsa-adac/examples/reconstruction        
         python run_reconstruction.py joint_id=1
         Note: Ensure the path_ad in config.yaml points to your training dataset.
 
@@ -55,7 +55,7 @@ Train the model on healthy trajectories for a specific joint (e.g., Joint 1). Th
    
 Run the detection pipeline on unseen/mixed data. The script will output anomaly charts, query the FAISS database for known false positives, and ask the user to label any unclassified faults.
 
-        
+        cd im-tsa-adac/examples/reconstruction
         python ad.py --j1
         Note: Ensure the path_ad in config.yaml points to your testing dataset.
 
