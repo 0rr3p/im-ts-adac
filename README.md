@@ -1,6 +1,7 @@
 
 ## Industrial Multijoint Time-Series Anomaly Detection (IM-TS-ADAC)
-This project is a heavily modified and extended fork of the time-series-autoencoder originally developed by Jules Belveze.
+This project is a heavily modified and extended fork of the time-series-autoencoder [Link Text](https://github.com/JulesBelveze/time-series-autoencoder)
+originally developed by Jules Belveze.
 
 Major modifications from the original repository include:
         
