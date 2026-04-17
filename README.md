@@ -34,6 +34,7 @@ An end-to-end pipeline for anomaly detection and fault classification in industr
 * `config.yaml`: Hydra configuration file to manage hyperparameters and file paths.
 
 ## ⚙️ Installation
+0. Remember to use the correct paths (data_path=training data, path_ad=execution data) in the examples/reconstruction/config.yaml file!
 1. Install miniconda and create python 3.11 environment from "anaconda prompt" terminal (the name cobot it's used just as an example):
    ```bash
    conda create --name cobot python=3.11
