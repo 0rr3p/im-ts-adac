@@ -3,7 +3,7 @@ joint_id: 1 # Valore di default
 data:
   _target_: tsa.dataset.TimeSeriesDataset
   batch_size: 32
-  data_path: "C:\\Users\\Carlo\\time-series-autoencoder\\examples\\reconstruction\\QUERY_CSV_TOTALE_EXCEL_FATTO_SANE.csv"
+  data_path: "C:\\Users\\Carlo\\im-ts-adac\\examples\\reconstruction\\QUERY_CSV_TOTALE_EXCEL_FATTO_SANE.csv"
   index_col: "Timestamp"
   traj_col: "trajectory_id"
   feature_cols: ["j${joint_id}_v", "j${joint_id}_a", "j${joint_id}_t"]
@@ -42,7 +42,7 @@ general:
   save_steps: 100
   eval_during_training: True
 
-path_ad: "C:\\Users\\Carlo\\time-series-autoencoder\\examples\\reconstruction\\QUERY_CSV_TOTALE_EXCEL_FATTO_1MALATA.csv" #insert path 4 anomaly detection
+path_ad: "C:\\Users\\Carlo\\im-ts-adac\\examples\\reconstruction\\QUERY_CSV_TOTALE_EXCEL_FATTO_1MALATA.csv" #insert path 4 anomaly detection
 
 hydra:
   sweep:
