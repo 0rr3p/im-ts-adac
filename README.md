@@ -4,13 +4,13 @@ This project is a heavily modified and extended fork of the time-series-autoenco
 
 Major modifications from the original repository include:
         
-        *Implementation of a complete post-processing inference pipeline (ad.py).
+1.Implementation of a complete post-processing inference pipeline (ad.py).
                 
-        Addition of FAISS to store latent embeddings and filter false positives.
+2.Addition of FAISS to store latent embeddings and filter false positives.
                 
-        Addition of a Random Forest layer to classify the reconstruction residuals.
+3.Addition of a Random Forest layer to classify the reconstruction residuals.
                 
-        Overhaul of the dataset and DataLoader to support multi-feature synchronization and post-training static scaling.
+4.Overhaul of the dataset and DataLoader to support multi-feature synchronization and post-training static scaling.
 
 ## Description IM-TS-ADAC
 
