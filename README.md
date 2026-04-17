@@ -2,15 +2,15 @@
 # Industrial Multijoint Time-Series Anomaly Detection (IM-TS-ADAC)
 This project is a heavily modified and extended fork of the time-series-autoencoder originally developed by Jules Belveze.
 
-*Major modifications from the original repository include:
+Major modifications from the original repository include:
         
-*Implementation of a complete post-processing inference pipeline (ad.py).
+Implementation of a complete post-processing inference pipeline (ad.py).
         
-*Addition of FAISS to store latent embeddings and filter false positives.
+Addition of FAISS to store latent embeddings and filter false positives.
         
-*Addition of a Random Forest layer to classify the reconstruction residuals.
+Addition of a Random Forest layer to classify the reconstruction residuals.
         
-*Overhaul of the dataset and DataLoader to support multi-feature synchronization and post-training static scaling.
+Overhaul of the dataset and DataLoader to support multi-feature synchronization and post-training static scaling.
 
 # Description IM-TS-ADAC
 
