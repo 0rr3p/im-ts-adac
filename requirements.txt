@@ -73,7 +73,7 @@ sympy==1.13.3
     # via torch
 threadpoolctl==3.5.0
     # via scikit-learn
-torch>=2.5.0
+torch>=2.11.0
     # via tsa (pyproject.toml)
 tqdm==4.66.5
     # via tsa (pyproject.toml)
