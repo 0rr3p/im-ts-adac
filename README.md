@@ -1,9 +1,3 @@
-<h1 align="center">LSTM-autoencoder with attentions for multivariate time series</h1>
-
-<p align="center">
-    <img src="https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2FJulesBelveze%2Ftime-series-autoencoder" alt="Hits">
-  <img src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg">
-</p>
 
 This project is a heavily modified and extended fork of the time-series-autoencoder originally developed by Jules Belveze.
 
@@ -43,7 +37,40 @@ An end-to-end pipeline for anomaly detection and fault classification in industr
    ```bash
    git clone [https://github.com/yourusername/your-repo-name.git](https://github.com/yourusername/your-repo-name.git)
    cd your-repo-name
-    
+
+## 🛠️ Usage
+This project uses Hydra for configuration management. You can override parameters directly from the CLI.
+
+1. Training the AutoEncoder
+Train the model on healthy trajectories for a specific joint (e.g., Joint 1). The script will automatically save the scaler, the best model checkpoints, and compute the dynamic threshold.
+
+Bash
+python run_reconstruction.py joint_id=1
+# Note: Ensure the path_ad in config.yaml points to your training dataset.
+
+
+2. Anomaly Detection & Classification
+Run the detection pipeline on unseen/mixed data. The script will output anomaly charts, query the FAISS database for known false positives, and ask the user to label any unclassified faults.
+
+Bash
+python ad.py --j1
+# Note: Ensure the path_ad in config.yaml points to your testing dataset.
+
+
+
+
+
+
+
+
+
+## ORIGINAL README
+<h1 align="center">LSTM-autoencoder with attentions for multivariate time series</h1>
+
+<p align="center">
+    <img src="https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2FJulesBelveze%2Ftime-series-autoencoder" alt="Hits">
+  <img src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg">
+</p>
 
 This repository contains an autoencoder for multivariate time series forecasting.
 It features two attention mechanisms described
