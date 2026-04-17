@@ -8,6 +8,7 @@ dependencies = [
     "torchvision>=0.26.0",
     "matplotlib>=3.3.4",
     "tensorboard",
+    "tensorboardx",
     "tqdm>=4.59.0",
     "hydra-core>=1.2.0",
     "scikit-learn>=1.5.2",
