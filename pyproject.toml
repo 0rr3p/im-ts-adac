@@ -4,8 +4,8 @@ version = "0.1.0"
 description = ""
 requires-python = ">=3.10"
 dependencies = [
-    "torch>=2.5.0",
-    "torchvision",
+    "torch>=2.11.0",
+    "torchvision>=0.26.0",
     "matplotlib>=3.3.4",
     "tensorboard",
     "tqdm>=4.59.0",
