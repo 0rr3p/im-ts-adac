@@ -71,8 +71,6 @@ six==1.16.0
     # via python-dateutil
 sympy==1.13.3
     # via torch
-tensorboardx==2.6.2.2
-    # via tsa (pyproject.toml)
 threadpoolctl==3.5.0
     # via scikit-learn
 torch>=2.5.0
