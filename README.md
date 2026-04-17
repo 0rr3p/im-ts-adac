@@ -56,7 +56,7 @@ This project uses Hydra for configuration management. You can override parameter
 Train the model on healthy trajectories for a specific joint (e.g., Joint 1). The script will automatically save the scaler, the best model checkpoints, and compute the dynamic threshold.
 
         cd im-tsa-adac/examples/reconstruction        
-        python run_reconstruction.py joint_id=1
+        python run_reconstruction.py -m joint_id=1,2,3,4,5,6
         Note: Ensure the path_ad in config.yaml points to your training dataset.
 
 2. Anomaly Detection & Classification
