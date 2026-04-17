@@ -75,7 +75,7 @@ tensorboardx==2.6.2.2
     # via tsa (pyproject.toml)
 threadpoolctl==3.5.0
     # via scikit-learn
-torch==2.5.0
+torch>=2.5.0
     # via tsa (pyproject.toml)
 tqdm==4.66.5
     # via tsa (pyproject.toml)
