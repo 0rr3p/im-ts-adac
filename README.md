@@ -36,8 +36,9 @@ An end-to-end pipeline for anomaly detection and fault classification in industr
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/yourusername/your-repo-name.git](https://github.com/yourusername/your-repo-name.git)
-   cd your-repo-name
+   git clone https://github.com/0rr3p/im-ts-adac/
+   cd im-ts-adac
+   pip install -r requirements.txt
 
 ## 🛠️ Usage
 This project uses Hydra for configuration management. You can override parameters directly from the CLI.
