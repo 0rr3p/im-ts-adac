@@ -5,6 +5,46 @@
   <img src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg">
 </p>
 
+This project is a heavily modified and extended fork of the time-series-autoencoder originally developed by Jules Belveze.
+
+    -Major modifications from the original repository include:
+    
+    -Implementation of a complete post-processing inference pipeline (ad.py).
+    
+    -Addition of FAISS to store latent embeddings and filter false positives.
+    
+    -Addition of a Random Forest layer to classify the reconstruction residuals.
+    
+    -Overhaul of the dataset and DataLoader to support multi-feature synchronization and post-training static scaling.
+
+# Industrial Multijoint Time-Series Anomaly Detection (IM-TS-ADAC)
+
+An end-to-end pipeline for anomaly detection and fault classification in industrial multi-joint robots. This project leverages an **LSTM-based AutoEncoder** to reconstruct time-series data, integrating a **FAISS vector database** to reduce false positives and a **Random Forest** classifier to automatically categorize mechanical faults based on reconstruction residuals.
+
+## 🚀 Key Features
+
+* **LSTM AutoEncoder with Attention:** Learns the normal mechanical behavior of robot joints (Velocity, Acceleration, Torque) and computes reconstruction errors.
+* **Dynamic Thresholding:** Automatically computes the anomaly threshold (Z-Score: $\mu + 3\sigma$) during the training phase.
+* **FAISS Vector Database (Memory):** Extracts the 32-dimensional latent representation of trajectories. When a "sane" but rare trajectory triggers a false positive, it is saved in FAISS. Future identical anomalies are instantly filtered out.
+* **Random Forest Fault Classification:** Extracts 30 statistical features from the reconstruction residuals (MSE delta) to classify the specific type of mechanical fault.
+* **Human-in-the-Loop:** An interactive CLI allows operators to review anomalies via Matplotlib, discard false positives (updating FAISS), and manually label new faults (retraining the Random Forest on the fly).
+
+## 📁 Project Structure
+
+* `ad.py`: The core anomaly detection and classification pipeline (Inference, FAISS query, RF classification).
+* `run_reconstruction.py`: Training script for the AutoEncoder model.
+* `model.py`: PyTorch implementation of the Encoder/Decoder with optional Temporal Attention.
+* `dataset.py`: Data preprocessing, scaling, and sliding-window generation.
+* `config.yaml`: Hydra configuration file to manage hyperparameters and file paths.
+
+## ⚙️ Installation
+
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/yourusername/your-repo-name.git](https://github.com/yourusername/your-repo-name.git)
+   cd your-repo-name
+    
+
 This repository contains an autoencoder for multivariate time series forecasting.
 It features two attention mechanisms described
 in *[A Dual-Stage Attention-Based Recurrent Neural Network for Time Series Prediction](https://arxiv.org/abs/1704.02971)*
