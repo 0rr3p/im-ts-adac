@@ -50,11 +50,9 @@ Train the model on healthy trajectories for a specific joint (e.g., Joint 1). Th
 python run_reconstruction.py joint_id=1
 Note: Ensure the path_ad in config.yaml points to your training dataset.
 
-
 2. Anomaly Detection & Classification
 Run the detection pipeline on unseen/mixed data. The script will output anomaly charts, query the FAISS database for known false positives, and ask the user to label any unclassified faults.
 
-```bash
 python ad.py --j1
 Note: Ensure the path_ad in config.yaml points to your testing dataset.
 
