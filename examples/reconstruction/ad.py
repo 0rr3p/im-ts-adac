@@ -24,23 +24,6 @@ hidden_size_encoder= 32
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-# --- LOGICA DI PULIZIA ARGOMENTI PER HYDRA ---
-# Estraiamo il numero del giunto e PULIAMO sys.argv prima che Hydra lo veda
-def get_joint_and_clean_argv():
-    joint = "0" # Default
-    filtered_argv = []
-    for arg in sys.argv:
-        if arg.startswith("--j") and arg[3:].isdigit():
-            joint = arg[3:]
-        else:
-            filtered_argv.append(arg)
-    # Sovrascriviamo sys.argv rimuovendo i flag personalizzati
-    sys.argv = filtered_argv 
-    return joint
-
-# Variabile globale catturata all'avvio
-SELECTED_JOINT = get_joint_and_clean_argv()
-
 
 def find_latest_artifacts(joint_id):
     # Path relativo: ci troviamo in 'reconstruction', cerchiamo la cartella 'outputs'
