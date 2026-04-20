@@ -71,7 +71,7 @@ def train(train_iter, test_iter, model, criterion, optimizer, config, ts):
                     if config.general.eval_during_training:
                         results = evaluate(test_iter, criterion, model, config, ts)
 
-                        current_eval_loss = results.get("MSE", float('inf'))
+                        current_MSE = results.get("MSE", float('inf'))
                         current_eval_std = results.get("std", 0.0)
 
                         # --- CONTROLLO E SALVATAGGIO BEST MODEL ---
@@ -87,7 +87,7 @@ def train(train_iter, test_iter, model, criterion, optimizer, config, ts):
                                 "decoder_state_dict": model.decoder.state_dict(),
                                 "optimizer_state_dict": optimizer.state_dict(),
                                 "loss": best_eval_loss,
-                                "mu": current_eval_loss,    # Salviamo la Media
+                                "mu": current_MSE,    # Salviamo la Media
                                 "sigma": current_eval_std,  # Salviamo la Deviazione Standard
                                 "global_step": global_step
                             }, os.path.join(config.general.output_dir, "best_model.ckpt"))
