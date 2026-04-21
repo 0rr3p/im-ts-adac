@@ -68,8 +68,8 @@ Train the model on healthy trajectories for a specific joint (e.g., Joint 1). Th
 Run the detection pipeline on unseen/mixed data. The script will output anomaly charts, query the FAISS database for known false positives, and ask the user to label any unclassified faults.
 
         cd im-tsa-adac/examples/reconstruction
-        python ad.py --j1
-        Note: Ensure the path_ad in config.yaml points to your testing dataset.
+        python ad.py 
+        Note: Ensure the path_ad in config.yaml points to your testing dataset, and the join_id line in the config.yaml file points to the joint you want to analyze
 
 
 
