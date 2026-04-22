@@ -1,14 +1,14 @@
-joint_id: 2 # Valore di default
+joint_id: 1 # Valore di default
 
 data:
   _target_: tsa.dataset.TimeSeriesDataset
-  batch_size: 32
+  batch_size: 128
   data_path: "C:\\Users\\Carlo\\time-series-autoencoder\\examples\\reconstruction\\QUERY_CSV_TOTALE_EXCEL_FATTO_SANE.csv"
   index_col: "Timestamp"
   traj_col: "trajectory_id"
   feature_cols: ["j${joint_id}_v", "j${joint_id}_a", "j${joint_id}_t"]
   target_col: null                  # not used for reconstruction
-  train_size: 0.85                   # 85% of trajectory IDs → training
+  train_size: 0.80                  # 85% of trajectory IDs → training
   prediction_window: 1
   seq_length: 60                    # sliding window; tune between 30–100
   task:
@@ -22,10 +22,10 @@ training:
   hidden_size_encoder: 32
   hidden_size_decoder: 32
   input_att: True
-  lr: 1e-3
-  lr_decay_every_n_epoch: 300 ##Ogni quante epoche dimezzare il learning rate?
+  lr: 5e-3
+  lr_decay_every_n_epoch: 60 ##Ogni quante epoche dimezzare il learning rate?
   max_grad_norm: 1.0
-  num_epochs: 40
+  num_epochs: 150
   output_size: 3                    # = len(feature_cols): j1_v, j1_a, j1_t
   reg1: False
   reg2: True
@@ -37,7 +37,7 @@ training:
 general:
   do_eval: True
   do_train: True
-  logging_steps: 40
+  logging_steps: 100
   logging_steps_final: 20 
   output_dir: "output"
   save_steps: 100
