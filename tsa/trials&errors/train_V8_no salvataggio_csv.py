@@ -1,0 +1,164 @@
+import os
+import csv
+import torch
+from tensorboardX import SummaryWriter
+from tqdm import tqdm
+
+from .eval import evaluate
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+
+def train(train_iter, test_iter, model, criterion, optimizer, config, ts):
+    """
+    Training function.
+
+    Args:
+        train_iter: (DataLoader): train data iterator
+        test_iter: (DataLoader): test data iterator
+        model: model
+        criterion: loss to use
+        optimizer: optimizer to use
+        config:
+        Training function with Best Model saving in the final 10% of steps.
+    """
+    # In train.py, sostituisci i due writer con uno solo
+    tb_writer = SummaryWriter(logdir=config.general.output_dir)
+    
+    if not os.path.exists(config.general.output_dir):
+        os.makedirs(config.general.output_dir)
+
+    # --- LOGICA BEST MODEL ---
+    best_custom_score = float('inf')
+    custom_score_lambda = 3.0
+    # Calcoliamo il totale dei passi per determinare la soglia del 10%
+    total_steps = config.training.num_epochs * len(train_iter)
+    start_saving_best = int(0.9 * total_steps) 
+    # --------------------------
+    
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=config.training.lr_decay_every_n_epoch, gamma=0.5)
+
+    global_step, logging_loss = 0, 0.0
+    train_loss = 0.0
+    
+    
+    for epoch in tqdm(range(config.training.num_epochs), unit="epoch"):
+        for i, batch in tqdm(enumerate(train_iter), total=len(train_iter), unit="batch"):
+            model.train()
+            optimizer.zero_grad()
+
+            feature, y_hist, target, _ = [b.to(device) for b in batch] ###RIGA CAMBIATA RISPETTO A OG!
+            
+            N = config.training.first_n_ignore # Definiamo N (es. 1 o superiore)
+
+            output = model(feature.to(device), y_hist.to(device))
+            
+            loss = criterion(output[:, N:, :], target[:, N:, :])
+            
+            if config.training.reg1:
+                params = torch.cat([p.view(-1) for name, p in model.named_parameters() if "bias" not in name])
+                loss += config.training.reg_factor1 * torch.norm(params, 1)
+            if config.training.reg2:
+                params = torch.cat([p.view(-1) for name, p in model.named_parameters() if "bias" not in name])
+                loss += config.training.reg_factor2 * torch.norm(params, 2)
+
+            if config.training.gradient_accumulation_steps > 1:
+                loss = loss / config.training.gradient_accumulation_steps
+
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), config.training.max_grad_norm)
+            train_loss += loss.item()
+
+            if (i + 1) % config.training.gradient_accumulation_steps == 0:
+                optimizer.step()
+                
+                global_step += 1
+
+                current_log_freq = (
+                    config.general.logging_steps_final 
+                    if global_step >= start_saving_best 
+                    else config.general.logging_steps
+                )
+                if global_step % current_log_freq == 0:
+                    if config.general.eval_during_training:
+                        results = evaluate(test_iter, criterion, model, config, ts)
+
+                        current_MSE = results.get("MSE", float('inf'))
+                        current_eval_std = results.get("std", 0.0)
+
+                        # --- CONTROLLO E SALVATAGGIO BEST MODEL ---
+                        current_eval_loss = results.get("loss", float('inf'))
+
+                        current_custom_score = current_MSE + custom_score_lambda * current_eval_std
+                        tb_writer.add_scalar("eval/custom_score", current_custom_score, global_step)
+                        
+                        # Salviamo solo se siamo nell'ultimo 10% e la loss è migliorata
+                        if global_step >= start_saving_best and current_custom_score < best_custom_score:
+                            best_custom_score = current_custom_score
+
+                            torch.save({
+                                "epoch": epoch + 1,
+                                "encoder_state_dict": model.encoder.state_dict(),
+                                "decoder_state_dict": model.decoder.state_dict(),
+                                "optimizer_state_dict": optimizer.state_dict(),
+                                "custom_score": best_custom_score,
+                                "loss": current_eval_loss,
+                                "mu": current_MSE,    # Salviamo la Media
+                                "sigma": current_eval_std,  # Salviamo la Deviazione Standard
+                                "global_step": global_step
+                            }, os.path.join(config.general.output_dir, "best_model.ckpt"))
+                            
+                            # --- NUOVO CODICE PER IL SALVATAGGIO IN CSV ---
+                            csv_path = os.path.join(config.general.output_dir, "best_model_results.csv")
+                            file_exists = os.path.isfile(csv_path)
+                            
+                            # Prepara il dizionario con i dati da salvare
+                            csv_row = {
+                                "global_step": global_step,
+                                "epoch": epoch + 1,
+                                "custom_score": best_custom_score,
+                                "best_loss": current_eval_loss,
+                                "MSE": current_MSE,
+                                "std": current_eval_std
+                            }
+                            
+                            # Aggiunge dinamicamente tutte le altre metriche presenti in 'results'
+                            for key, val in results.items():
+                                if key not in csv_row:
+                                    csv_row[key] = val
+                            
+                            # Scrive nel CSV in modalità append ('a')
+                            with open(csv_path, mode='w', newline='') as f:
+                                writer = csv.DictWriter(f, fieldnames=csv_row.keys())
+                                # Scrive l'header solo se il file è appena stato creato
+                                if not file_exists:
+                                    writer.writeheader()
+                                writer.writerow(csv_row)
+                            # ----------------------------------------------
+                            print(
+                                f"\n[STEP {global_step}] Nuovo miglior modello trovato "
+                                f"(custom_score: {best_custom_score:.6f} | "
+                                f"MSE: {current_MSE:.6f} | std: {current_eval_std:.6f})"
+                            )
+                        # -------------------------------------------
+                        
+                        for key, val in results.items():
+                            tb_writer.add_scalar(f"eval/{key}", val, global_step)
+
+
+                    tb_writer.add_scalar("train/loss", (train_loss - logging_loss) / current_log_freq,
+                                               global_step)
+                    tb_writer.add_scalar("train/lr", scheduler.get_last_lr()[0], global_step)
+                    logging_loss = train_loss
+                    
+                if global_step % config.general.save_steps == 0:
+                        torch.save({
+                            "epoch": epoch + 1,
+                            "encoder_state_dict": model.encoder.state_dict(),
+                            "decoder_state_dict": model.decoder.state_dict(),
+                            "optimizer_state_dict": optimizer.state_dict(),
+                            "loss": loss.item()
+                        }, "{}/checkpoint-{}.ckpt".format(config.general.output_dir, global_step))
+                    
+        scheduler.step()

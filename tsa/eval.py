@@ -1,0 +1,92 @@
+import os
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import torch.nn.functional as F
+from tqdm import tqdm
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+def evaluate(test_iter, criterion, model, config, ts):
+    """
+    Evaluate the model on the given test set.
+
+    Args:
+        test_iter: (DataLoader): test dataset iterator
+        criterion: loss function
+        model: model to use
+        config: config
+    """
+    predictions, targets, attentions = [], [], []
+    eval_loss = 0.0
+
+    model.eval()
+    for i, batch in tqdm(enumerate(test_iter), total=len(test_iter), desc="Evaluating"):
+        with torch.no_grad():
+            feature, y_hist, target, _, __ = [b.to(device) for b in batch]
+
+
+            N = config.training.first_n_ignore # Definiamo N (es. 1 o superiore)
+
+            output, att = model(feature.to(device), y_hist.to(device), return_attention=True)
+            
+            loss = criterion(output[:, N:, :], target[:, N:, :])
+            eval_loss += loss.item()
+
+            predictions.append(output.cpu())
+            targets.append(target.cpu())
+            attentions.append(att.cpu())
+
+    predictions, targets = torch.cat(predictions), torch.cat(targets)
+
+    if config.general.do_eval:
+        preds, targets_ = ts.invert_scale(predictions), ts.invert_scale(targets)
+
+        plt.figure()
+        # Modifica: plottiamo solo la primissima sequenza ricostruita (indice 0)
+        # preds[0] avrà dimensione [seq_len, features] e Matplotlib lo gestirà perfettamente
+        plt.plot(preds[0].numpy(), linewidth=1.5, linestyle='--', label='Preds') 
+        plt.plot(targets_[0].numpy(), linewidth=1.5, alpha=0.7, label='Targets')
+        plt.title("Reconstruction of the first sequence")
+        # plt.legend() # Decommenta se vuoi la legenda
+        plt.savefig("{}/preds.png".format(config.general.output_dir))
+        plt.close()
+
+        torch.save(targets, os.path.join(config.general.output_dir, "targets.pt"))
+        torch.save(predictions, os.path.join(config.general.output_dir, "predictions.pt"))
+        torch.save(attentions, os.path.join(config.general.output_dir, "attentions.pt"))
+
+        N = config.training.first_n_ignore # Definiamo N (es. 1 o superiore)
+        
+    results = get_eval_report(eval_loss / len(test_iter), predictions, targets, N)
+    file_eval = os.path.join(config.general.output_dir, "eval_results.txt")
+    with open(file_eval, "w") as f:
+        f.write("********* EVAL REPORT ********\n")
+        for key, val in results.items():
+            f.write("  %s = %s\n" % (key, str(val)))
+
+    return results
+
+
+def get_eval_report(eval_loss: float, predictions: torch.Tensor, targets: torch.Tensor,N: int):
+    # Calcoliamo l'MSE per ogni singola finestra: (N, seq_len, features) -> (N,)
+    #predictions e targets sono già i tensori concatenati di tutto il set
+    
+    
+    mse_per_window = torch.mean((predictions[:, N:, :] - targets[:, N:, :])**2, dim=(1, 2))
+    
+    mu = mse_per_window.mean().item()
+    sigma = mse_per_window.std().item()
+    
+    residuals = np.mean(predictions[:, N:, :].numpy() - targets[:, N:, :].numpy())
+    
+    return {
+        "MSE": mu, 
+        "std": sigma,  # <--- Questa è la tua Sigma per lo Z-Score
+        "residuals": residuals, 
+        "loss": eval_loss
+    }
