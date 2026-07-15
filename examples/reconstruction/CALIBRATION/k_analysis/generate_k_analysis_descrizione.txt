@@ -1,0 +1,15 @@
+Tutto generato e testato. Ecco cosa produce lo script e come usarlo:
+Uso:
+bashpython generate_k_analysis.py --input mse_data.csv --output ./output --fpr-target 1.0
+L'unico argomento obbligatorio è --input. Il CSV deve avere esattamente la struttura del tuo: separatore ;, decimale ,, con le colonne Joint_ID, mse, AVG MSE TRAINING, AVG STD TRAINING. Funziona con qualsiasi numero di giunti.
+7 figure generate:
+
+figure_01 — istogrammi MSE per giunto con gaussiana teorica sovrapposta e le soglie k=2 e k=3 evidenziate
+figure_02 — QQ-plot per verificare la gaussianità, con il rapporto p99 nel titolo di ogni subplot
+figure_03 — curva FPR vs k per tutti i giunti, con la linea FPR=1% e il riferimento k=3
+figure_04 — bar chart aggregato finestre salvate (asse sx) vs ancora flaggate (linea, asse dx), con il knee point evidenziato in giallo
+figure_05 — stessa cosa ma scomposta per ogni giunto
+figure_06 — densità finestre border-line per intervallo Δk, per giunto (barre verdi=zona efficiente, rosse=rendimenti calanti)
+figure_07 — k ottimale per-giunto con linea di riferimento k=3 e annotation outlier automatica
+
+5 tabelle CSV pronte da importare in Word/LaTeX, tutte con separatore ; e decimale , per compatibilità italiana.

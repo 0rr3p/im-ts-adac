@@ -1,0 +1,61 @@
+joint_id: 1 # Valore di default
+
+data:
+  _target_: tsa.dataset.TimeSeriesDataset
+  batch_size: 32
+  data_path: "C:\\Users\\Carlo\\time-series-autoencoder\\examples\\reconstruction\\NUOVI DATI RACCOLTI\\QUERY_CSV_SANE_EXCEL.csv"
+  index_col: "Timestamp"
+  traj_col: "trajectory_id"
+  feature_cols: ["j${joint_id}_v", "j${joint_id}_a", "j${joint_id}_t"]
+  target_col: null                  # not used for reconstruction
+  train_size: 0.80                   # 85% of trajectory IDs → training
+  prediction_window: 1
+  seq_length: 128  # sliding window; 
+  overlap: 0.125
+  k: 3 # anomaly detection threshold = mu + k * sigma
+  first_n_ignore: 0
+  task:
+    _target_: tsa.dataset.Tasks
+    value: reconstruction
+
+training:
+  denoising: False
+  scheduler: "cosine"        # "step" | "cosine" | "cosine_restarts"
+  directions: 1
+  gradient_accumulation_steps: 1
+  from_last_steps: 0.4 #starts saving best model in the last X% of steps 
+  hidden_size_encoder: 48
+  hidden_size_decoder: ${training.hidden_size_encoder} ##change how you want in this case it's set to be equal to hidden_size_encoder
+  input_att: False
+  lr: 0.01
+  lr_decay_every_n_epoch: 65 ##Ogni quante epoche dimezzare il learning rate? ##40
+  num_epochs: 158
+  output_size: 3                    # = len(feature_cols): j1_v, j1_a, j1_t
+  reg1: False
+  reg2: False
+  clip: 1.0
+  reg_factor1: 1e-4
+  reg_factor2: 1e-5
+  weight_decay: 1e-5
+  seq_len: ${data.seq_length}
+  first_n_ignore: ${data.first_n_ignore}
+  max_grad_norm: ${training.clip}
+  temporal_att: True
+
+general:
+  do_eval: True
+  do_train: True
+  logging_steps: 50
+  logging_steps_final: 4
+  output_dir: "output"
+  save_steps: 100
+  eval_during_training: True
+
+path_ad: "C:\\Users\\Carlo\\time-series-autoencoder\\examples\\reconstruction\\NUOVI DATI RACCOLTI\\QUERY_CSV_SANE_EXCEL.csv" #insert path 4 anomaly detection
+
+hydra:
+  job:
+    chdir: True
+  sweep:
+    dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S} # Cartella principale (comportamento di default)
+    subdir: ${joint_id}...seq_l=${data.seq_length}...i_att=${training.input_att}...t_att=${training.temporal_att}...h_size=${training.hidden_size_encoder}...ovlap=${data.overlap}...schd=${training.scheduler}...lr=${training.lr}...clip=${training.max_grad_norm}
