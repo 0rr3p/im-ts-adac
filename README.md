@@ -1,6 +1,4 @@
 ## Industrial Multijoint Time-Series Anomaly Detection And Classification (IM-TS-ADAC)
-This project is a heavily modified and extended fork of the [time-series-autoencoder](https://github.com/JulesBelveze/time-series-autoencoder)
-originally developed by [Jules Belveze](https://github.com/JulesBelveze).
 
 Major modifications from the original repository include:
 
@@ -449,6 +447,8 @@ tensorboard --logdir multirun/<date>/<time>/<joint_subdir>/output
   `dataset.py`'s `pd.read_csv(..., sep=";", decimal=",")`).
 
 ---
+This project is a heavily modified and extended fork of the [time-series-autoencoder](https://github.com/JulesBelveze/time-series-autoencoder)
+originally developed by [Jules Belveze](https://github.com/JulesBelveze).
 
 ## ORIGINAL README
 <h1 align="center">LSTM-autoencoder with attentions for multivariate time series</h1>
