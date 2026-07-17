@@ -1,6 +1,5 @@
 ## Industrial Multijoint Time-Series Anomaly Detection And Classification (IM-TS-ADAC)
 
-Major modifications from the original repository include:
 
 1.Implementation of a complete post-processing inference pipeline (ad.py).
 
